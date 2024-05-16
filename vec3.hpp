@@ -4,6 +4,9 @@
 #include <iostream>
 #include <ostream>
 
+// relevant part:
+// https://raytracing.github.io/books/RayTracingInOneWeekend.html#thevec3class
+
 class vec3 {
 public:
     double e[3];
@@ -45,14 +48,14 @@ public:
         return *this;
     }
 
-    vec3& operator*=(const double& t) {
+    vec3& operator*=(double t) {
         e[0] *= t;
         e[1] *= t;
         e[2] *= t;
         return *this;
     }
 
-    vec3& operator/=(const double& t) {
+    vec3& operator/=(double t) {
         return *this *= 1. / t;
     }
 

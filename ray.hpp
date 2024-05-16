@@ -20,7 +20,8 @@ public:
     const point3& origin() const {
         return orig;
     }
-    const point3& direction() const {
+
+    const vec3& direction() const {
         return dir;
     }
 
