@@ -62,8 +62,12 @@ T lerp(T start_value, T end_value, double t) {
 color ray_color(const ray& r) {
     double t = hit_sphere(point3{0, 0, -1}, 0.5, r);
     if (t >= 0.0) {
+        color red_mask = color{1., 0., 0.};
+        color green_mask = color{0., 1., 0.};
+        color blue_mask = color{0., 0., 1.};
+
         vec3 sphere_normal = unit_vector(r.at(t) - vec3(0, 0, -1));
-        return static_cast<color>((sphere_normal + vec3{1, 1, 1}) / 2.);
+        return static_cast<color>((sphere_normal + vec3{1, 1, 1}) / 2.) * red_mask;
     }
     vec3 unit_direction = unit_vector(r.direction());
     auto a = (unit_direction.y() + 1) / 2;
