@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vec3.hpp"
+#include "common.hpp"
 
 // relevant part:
 // https://raytracing.github.io/books/RayTracingInOneWeekend.html#rays,asimplecamera,andbackground

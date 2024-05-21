@@ -1,73 +1,23 @@
 
-#include "color.hpp"
+#include "common.hpp"
+#include "sphere.hpp"
 #include "ray.hpp"
-#include "vec3.hpp"
-
-#include <fstream>
-
-// revelant parts:
-// https://raytracing.github.io/books/RayTracingInOneWeekend.html#outputanimage
-// https://raytracing.github.io/books/RayTracingInOneWeekend.html#rays,asimplecamera,andbackground
-
-double hit_sphere(const point3& center, double radius, const ray& r) {
-
-    // note:
-    // the solution to this comes from:
-    // solving for (x,y,z) in:
-    // (x(t) - x_0)**2 + (y(t) - y_0)**2 + (z(t) - z_0)**2 = radius**2
-    //
-    // or in vector form:
-    // (point(t) - center) . (point(t) - center) = radius**2
-    //
-    // and plugging in the equation for the ray (line):
-    // point(t) = camera_center + t * ray_direction
-    //
-    // and solving for t, involving a quadratic equation.
-
-    vec3 oc = center - r.origin();
-
-    // unoptimized:
-    // auto a = dot(r.direction(), r.direction());
-    // auto b = -2.0 * dot(r.direction(), oc);
-    // auto c = dot(oc, oc) - radius * radius;
-    //
-    // auto discriminant = b * b - 4 * a * c;
-    //
-    // if (discriminant < 0) {
-    //     return -1.;
-    // } else {
-    //     auto t = (-b - sqrt(discriminant)) / (2.0 * a);
-    //     return t;
-    // }
-
-    // optimized version (from the book):
-    auto a = r.direction().length_squared();
-    auto h = dot(r.direction(), oc);
-    auto c = oc.length_squared() - radius * radius;
-    auto discriminant = h * h - a * c;
-
-    if (discriminant < 0) {
-        return -1.0;
-    } else {
-        auto t = (h - sqrt(discriminant)) / a;
-        return t;
-    }
-}
+#include "hittable_list.hpp"
 
 template <typename T>
 T lerp(T start_value, T end_value, double t) {
     return (1. - t) * start_value + t * end_value;
 }
 
-color ray_color(const ray& r) {
-    double t = hit_sphere(point3{0, 0, -1}, 0.5, r);
-    if (t >= 0.0) {
+color ray_color(const ray& r, const hittable& world) {
+    hit_record rec;
+
+    if (world.hit(r, 0, infinity, rec)) {
         color red_mask = color{1., 0., 0.};
         color green_mask = color{0., 1., 0.};
         color blue_mask = color{0., 0., 1.};
 
-        vec3 sphere_normal = unit_vector(r.at(t) - vec3(0, 0, -1));
-        return static_cast<color>((sphere_normal + vec3{1, 1, 1}) / 2.) * red_mask;
+        return static_cast<color>((rec.normal + vec3{1, 1, 1}) / 2.) * red_mask;
     }
     vec3 unit_direction = unit_vector(r.direction());
     auto a = (unit_direction.y() + 1) / 2;
@@ -75,6 +25,12 @@ color ray_color(const ray& r) {
 }
 
 int main() {
+    // world:
+    hittable_list world;
+
+    world.add(make_shared<sphere>(point3(0,0,-1), 0.5));
+    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
+
     // image properties:
     // - ideal_aspect_ratio : constant (width / height)
     // - image_width        : constant
@@ -154,7 +110,7 @@ int main() {
             //
 
             ray r(camera_center, ray_direction);
-            color pixel_color = ray_color(r);
+            color pixel_color = ray_color(r, world);
             write_color(out, pixel_color);
         }
     }

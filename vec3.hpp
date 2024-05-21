@@ -1,8 +1,6 @@
 #pragma once
 
-#include <cmath>
-#include <iostream>
-#include <ostream>
+#include "common.hpp"
 
 // relevant part:
 // https://raytracing.github.io/books/RayTracingInOneWeekend.html#thevec3class

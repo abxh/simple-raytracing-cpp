@@ -1,8 +1,6 @@
 #pragma once
 
-#include "vec3.hpp"
-
-#include <iostream>
+#include "common.hpp"
 
 // relevant part:
 // https://raytracing.github.io/books/RayTracingInOneWeekend.html#thevec3class/colorutilityfunctions
