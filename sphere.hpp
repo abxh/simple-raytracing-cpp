@@ -13,7 +13,7 @@ public:
         : center{center}
         , radius{fmax(0, radius)} {}
 
-    bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const override {
+    bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
         // note:
         // the solution to this comes from:
         // solving for (x,y,z) in:
@@ -44,9 +44,9 @@ public:
         auto root2 = (h + sqrt(discriminant)) / a;
 
         double t{};
-        if (ray_tmin < root1 && root1 < ray_tmax) {
+        if (ray_t.surrounds(root1)) {
             t = root1;
-        } else if (ray_tmin < root2 && root2 < ray_tmax) {
+        } else if (ray_t.surrounds(root2)) {
             t = root2;
         } else {
             return false;
@@ -55,7 +55,6 @@ public:
         rec.t = t;
         rec.point = r.at(rec.t);
         rec.normal = (rec.point - center) / radius;
-
 
         //    ______
         //   /      \
