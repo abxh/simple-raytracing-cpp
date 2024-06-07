@@ -149,7 +149,7 @@ private:
     color ray_color(const ray& r, int depth, const hittable& world) const {
         // If we've exceeded the ray bounce limit, no more light is gathered.
         if (depth <= 0) {
-            return color(0,0,0);
+            return color{0, 0, 0};
         }
 
         hit_record rec;
@@ -159,9 +159,14 @@ private:
             // color green_mask = color{0., 1., 0.};
             // color blue_mask = color{0., 0., 1.};
 
-            vec3 direction = rec.normal + random_on_hemisphere(rec.normal);
+            ray scattered;
+            color attenuation;
 
-            return 0.5 * ray_color(ray{rec.point, direction}, depth - 1, world);
+            vec3 direction = rec.normal + random_on_hemisphere(rec.normal);
+            if (rec.mat->scatter(r, rec, attenuation, scattered)) {
+                return attenuation * ray_color(ray{rec.point, direction}, depth - 1, world);
+            }
+            return color{0, 0, 0};
         }
 
         vec3 unit_direction = unit_vector(r.direction());

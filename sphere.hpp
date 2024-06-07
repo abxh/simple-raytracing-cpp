@@ -4,14 +4,12 @@
 #include "hittable.hpp"
 
 class sphere : public hittable {
-private:
-    point3 center;
-    double radius;
-
 public:
-    sphere(const point3& center, double radius)
+    sphere(const point3& center, double radius, shared_ptr<material> mat)
         : center{center}
-        , radius{fmax(0, radius)} {}
+        , radius{fmax(0, radius)}
+        , mat{mat} {
+    }
 
     bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
         // note:
@@ -55,6 +53,7 @@ public:
         rec.t = t;
         rec.point = r.at(rec.t);
         rec.normal = (rec.point - center) / radius;
+        rec.mat = mat;
 
         //    ______
         //   /      \
@@ -68,4 +67,9 @@ public:
 
         return true;
     }
+
+private:
+    point3 center;
+    double radius;
+    shared_ptr<material> mat;
 };
